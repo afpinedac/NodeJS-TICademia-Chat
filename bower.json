@@ -1,0 +1,17 @@
+{
+  "name": "ticademia-chat",
+  "version": "0.0.0",
+  "homepage": "https://github.com/luismec90/ticademia",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io": "^1.4.6",
+    "express": "^4.13.4"
+  }
+}
