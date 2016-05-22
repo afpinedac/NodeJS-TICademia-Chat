@@ -1,0 +1,14 @@
+{
+  "name": "lzw-async",
+  "homepage": "https://github.com/hiddentao/lzw-async",
+  "_release": "e055ea8a58",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e055ea8a58f4e25ecaf77713811ed862bf469a40"
+  },
+  "_source": "git://github.com/hiddentao/lzw-async.git",
+  "_target": "*",
+  "_originalSource": "hiddentao/lzw-async",
+  "_direct": true
+}

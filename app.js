@@ -1,53 +1,111 @@
-
 var io = require('socket.io').listen(8888),
     mysql = require('mysql');
 
 var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'root',
-    database : 'ticademia'
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'ticademia'
 });
 
-connection.connect(function(err){
-    if(!err) {
+var sessions = [];
+connection.connect(function (err) {
+    if (!err) {
         console.log("Database is connected ... nn");
     } else {
         console.log("Error connecting database ... nn");
     }
 });
 
-io.sockets.on('connection', function(socket){
 
-    socket.on('join',  function(data){
-        socket.join(data.username);
-    });
+var network = {}, sockets = {};
 
-    socket.on('availables', function(){
-        console.log('alguien solicitó availables');
-        io.sockets.emit('availables', io.sockets.adapter.rooms);
-    });
+// io.sockets.in(data.room).emit('newMessage', {from: data.from, message: data.message});
+//io.sockets.emit('availables', io.sockets.adapter.rooms);
+
+io.sockets.on('connection', function (socket) {
 
 
-    socket.on('newMessage', function(data){
+    //START THE SESSION
+    //NOTIFY TO FRIENDS THAT I'M ONLINE
+    socket.on('startChatSession', function (data) {
 
-        if(data.from && data.room && data.message){
-            var msg  = {
-                from: data.from,
-                to: data.room,
-                message : data.message
-            };
-            connection.query("INSERT INTO chats SET ?", msg, function(err, result){
-            });
+        if(!network[data.id]){
+            network[data.id] = {};
+            network[data.id]['name'] = data.name;
+            network[data.id]['friends'] = {};
         }
 
-        io.sockets.in(data.room).emit('newMessage', {from: data.from , message:data.message});
+        network[data.id]['friends'] = data.friends;
+        socket.join(data.id);
+        var friendsConnected = notifyToFriends( data);
+        socket.emit('startChatSession', {friendsConnected: friendsConnected});
+        console.log(network);
+
+        //save the socket connection
+        sockets[data.id] = socket;
+
     });
 
-    socket.on('disconnect', function(){
-        io.sockets.emit('availables', io.sockets.adapter.rooms);
+
+    //DISCONNECT THE USER
+    socket.on('disconnect', function (data) {
+        console.log(data);
+        //io.sockets.emit('availables', io.sockets.adapter.rooms);
+        delete network[data.id];
+        console.log('cleaned information for the user');
     });
+
+    //SEND A MESSAGE TO ANOTHER USER
+    socket.on('sendChat', function (data) {
+
+        if (data.from && data.to && data.message) {
+
+            data.date = new Date().getTime();
+            data.received = 1;
+
+
+            var response = {};
+            response.items = [{
+                m: data.message,
+                f: data.from,
+                s: 0                    //0=the other user sent a message, 2, when I sent the data
+            }];
+
+            var sent = io.sockets.in(data.to).emit('sendChat', response);
+
+            if (!sent) {
+                msg['received'] = 0;
+            }
+
+            //connection.query("INSERT INTO chats SET ?", msg);
+
+        }
+
+    });
+
 });
+
+function notifyToFriends(friendConnected) {
+    var friendsConnected = [], friends = network[friendConnected.id]['friends'];
+
+    for (var i in friends) {
+        if(!sockets[i]){
+            continue;
+        }else{
+            sockets[i].emit('friendConnected', friendConnected);
+            friendsConnected.push({id: i, name: friends[i]});
+        }
+
+    }
+    return friendsConnected;
+}
+
+
+
+
+
+
 
 
 

@@ -12,6 +12,7 @@
   ],
   "dependencies": {
     "socket.io": "^1.4.6",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "lzw-async": "hiddentao/lzw-async"
   }
 }

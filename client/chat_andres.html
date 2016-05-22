@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>Sample Chat Application</title>
+    <style>
+        body {
+            background-color: #eeeeee;
+            padding: 0;
+            margin: 0 auto;
+            font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+            font-size: 11px;
+        }
+    </style>
+    <link rel="stylesheet" href="../resources/chat.css">
+
+
+</head>
+<body>
+<h3>Hola, <span id="username"></span></h3>
+
+<div>
+    <h2>Disponibles en chat</h2>
+    <ul id="chat-students">
+
+    </ul>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+<script src="../bower_components/lzw-async/lzw-async.min.js"></script>
+<!--<script src="../resources/chat.js"></script>-->
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+
+<script>
+    var userConnection = {
+        id : 1,
+        name: 'andres',
+        friends : {
+            2 : 'Luis',
+            3 : 'Julian'
+        }
+    };
+</script>
+
+
+<script src="chat.js"></script>
+</body>
+
+
+</html>

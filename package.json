@@ -1,0 +1,10 @@
+{
+  "name": "node-mysql",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.10.6",
+    "lzw-async": "^0.1.3",
+    "mysql": "^2.5.4",
+    "socket.io": "^1.4.6"
+  }
+}
