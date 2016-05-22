@@ -16,6 +16,7 @@ $(document).ready(function () {
         var chatHeartbeatTime = minChatHeartbeat;
         var originalTitle;
         var blinkOrder = 0;
+        var itemsfound = 0;
 
         var chatboxFocus = new Array();
         var newMessages = new Array();
@@ -83,7 +84,7 @@ $(document).ready(function () {
                         }
 
                         $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
-                       // itemsfound += 1;
+                        itemsfound += 1;
                     }
                 });
 

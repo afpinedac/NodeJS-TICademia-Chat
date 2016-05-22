@@ -1,4 +1,4 @@
-var io = require('socket.io').listen(8888),
+var io = require('socket.io').listen(9000),
     mysql = require('mysql');
 
 var connection = mysql.createConnection({
@@ -25,6 +25,7 @@ var network = {}, sockets = {};
 
 io.sockets.on('connection', function (socket) {
 
+    console.log("A new user is connected ");
 
     //START THE SESSION
     //NOTIFY TO FRIENDS THAT I'M ONLINE
