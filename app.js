@@ -25,24 +25,24 @@ var network = {}, sockets = {};
 
 io.sockets.on('connection', function (socket) {
 
-    console.log("A new user is connected ");
+    console.log("A new user is connected, socket =  " + socket.id);
 
     //START THE SESSION
     //NOTIFY TO FRIENDS THAT I'M ONLINE
     socket.on('startChatSession', function (data) {
 
-        if(!network[data.id]){
-            network[data.id] = {};
-            network[data.id]['name'] = data.name;
-            network[data.id]['friends'] = {};
+        if(!network[socket.id]){
+            network[socket.id] = {
+                id : data.id,
+                name : data.name,
+                friends: {}
+            };
         }
 
-        network[data.id]['friends'] = data.friends;
+        network[socket.id].friends = data.friends;
         socket.join(data.id);
-        var friendsConnected = notifyToFriends( data);
+        var friendsConnected = notifyToFriends(socket,data);
         socket.emit('startChatSession', {friendsConnected: friendsConnected});
-        console.log(network);
-
         //save the socket connection
         sockets[data.id] = socket;
 
@@ -51,10 +51,16 @@ io.sockets.on('connection', function (socket) {
 
     //DISCONNECT THE USER
     socket.on('disconnect', function (data) {
-        console.log(data);
-        //io.sockets.emit('availables', io.sockets.adapter.rooms);
-        delete network[data.id];
-        console.log('cleaned information for the user');
+        console.log('a user has disconnected', socket.id);
+        if(!network[socket.id]) return;
+        //say to all this friends, hey I have gone away!!
+        for(var i in network[socket.id].friends){
+            if(sockets[i]){
+                sockets[i].emit('friendDisconnected', {id:network[socket.id].id});
+            }
+        }
+        delete network[socket.id];
+        console.log('cleaned information for the socket = ' + socket.id , network);
     });
 
     //SEND A MESSAGE TO ANOTHER USER
@@ -87,17 +93,14 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-function notifyToFriends(friendConnected) {
-    var friendsConnected = [], friends = network[friendConnected.id]['friends'];
+function notifyToFriends(socket,friendConnected) {
+    var friendsConnected = [], friends = network[socket.id].friends;
 
     for (var i in friends) {
-        if(!sockets[i]){
-            continue;
-        }else{
+        if(sockets[i]){
             sockets[i].emit('friendConnected', friendConnected);
             friendsConnected.push({id: i, name: friends[i]});
         }
-
     }
     return friendsConnected;
 }

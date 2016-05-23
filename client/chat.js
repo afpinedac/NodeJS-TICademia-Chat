@@ -6,7 +6,10 @@ $(document).ready(function () {
 
         var socket,
             username,
-            usersConnected = [];
+            usersConnected = [],
+            opened = false;
+
+
 
         var windowFocus = true;
         var username;
@@ -22,12 +25,20 @@ $(document).ready(function () {
         var newMessages = new Array();
         var newMessagesWin = new Array();
         var chatBoxes = new Array();
+        chatBoxes.push(0);
 
 
         //listeners
 
         $("body").on('click', '.chatWith', function () {
-            chatWith($(this).data('with'));
+            var status = $(this).find('.chat-friend-status').text();
+
+            if(status == '0'){
+                chatWith($(this).data('with'));
+            }else{
+                alert('Usuario no conectado');
+            }
+
         });
 
         $("body").on('click', '[data-role="toggleChatBoxGrowth"]', function () {
@@ -42,13 +53,54 @@ $(document).ready(function () {
             checkChatBoxInputKey(event, $(this), $(this).data('title'));
         });
 
-        $("body").on('key')
 
+
+        var closeChat = function () {
+            $(".chat-body").hide();
+        }
+
+        var openChat = function () {
+            $(".chat-body").show();
+        }
+
+        $(".chat-bar").on('click', function () {
+            if (opened) {
+                closeChat();
+            } else {
+                openChat();
+            }
+            opened = !opened;
+        });
+
+
+        var addFriendsToChat = function (friends, availables) {
+            for (var i in friends) {
+                var chatFriend = $("#chat-friend-prototype").clone().attr('id','chat-friend-'+i);
+                chatFriend.find('.chat-friend-status').text(availables === true ? 'O' : 'X');
+                chatFriend.find('.chat-friend-username').text(friends[i]);
+                chatFriend.find('.chatWith').attr('data-with',i);
+                $('.chat-body').append(chatFriend);
+            }
+        }
+
+
+        var setFriendStatusInChat = function(id, available){
+            var friend = $("#chat-friend-"+id);
+            friend.find('.chat-friend-status').text(available ? '0' : 'X');
+        }
+
+        var setFriendsStatusinChat = function(friends, available){
+            for(var i in friends){
+                setFriendStatusInChat(friends[i].id, available);
+            }
+        }
 
         var _init = function () {
-            socket = io.connect('http://localhost:8888');
+            //socket = io.connect('http://chat.grupo-guiame.org:9500');
+            socket = io.connect('http://localhost:9000');
             username = userConnection.name;
             $("#username").text(username);
+            addFriendsToChat(userConnection.friends);
             startChatSession();
 
             socket.on('sendChat', function (data) {
@@ -131,7 +183,7 @@ $(document).ready(function () {
                     }
                 });
 
-                for (i = 0; i < chatBoxes.length; i++) {
+                for (i = 1; i < chatBoxes.length; i++) {
                     chatboxtitle = chatBoxes[i];
                     $("#chatbox_" + chatboxtitle + " .chatboxcontent").scrollTop($("#chatbox_" + chatboxtitle + " .chatboxcontent")[0].scrollHeight);
                     setTimeout('$("#chatbox_"+chatboxtitle+" .chatboxcontent").scrollTop($("#chatbox_"+chatboxtitle+" .chatboxcontent")[0].scrollHeight);', 100); // yet another strange ie bug
@@ -145,7 +197,11 @@ $(document).ready(function () {
 
             //when someone else get connected
             socket.on('friendConnected', function (data) {
-                $("#chat-students").append('<li><a href="javascript:void(0)" class="chatWith" data-with="' + data.id + '">Chat With ' + data.name + '</a></li>');
+                setFriendStatusInChat(data.id,true);
+            });
+
+            socket.on('friendDisconnected', function (data) {
+                setFriendStatusInChat(data.id,false);
             });
 
         }
@@ -360,11 +416,12 @@ $(document).ready(function () {
 
 
         var showConnectedFriends = function (friendsConnected) {
+            setFriendsStatusinChat(friendsConnected, true);
 
-            for (var i in friendsConnected) {
+            /*for (var i in friendsConnected) {
                 var friend = friendsConnected[i];
                 $("#chat-students").append('<li><a href="javascript:void(0)" class="chatWith" data-with="' + friend.id + '">Chat With ' + friend.name + '</a></a></li>');
-            }
+            }*/
         }
 
         return {

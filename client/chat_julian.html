@@ -43,6 +43,52 @@
 </script>
 
 
+<style>
+
+    #chat {
+        position: fixed;
+        bottom: 0px;
+        border: 1px solid black;
+        width: 225px;
+        right: 5px;
+    }
+
+    .chat-bar {
+        background: red;
+        cursor: pointer;
+        height: 20px;
+    }
+
+    .chat-body {
+        overflow-y: scroll;
+        max-height: 100px;
+        background-color: ghostwhite;
+        display: none;
+    }
+
+    #chat-friend-prototype{
+
+    }
+
+</style>
+
+
+
+<div id="chat">
+    <div class="chat-bar">
+        <span>Chat</span>
+    </div>
+    <div class="chat-body">
+    </div>
+</div>
+<div id="chat-friend-prototype" class="chat-friend">
+    <a href="javascript:void(0)" class="chatWith">
+        <span class="chat-friend-status"></span>
+        <span class="chat-friend-username"></span>
+    </a>
+</div>
+
+
 <script src="chat.js"></script>
 </body>
 
