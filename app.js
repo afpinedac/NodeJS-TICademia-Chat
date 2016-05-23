@@ -42,7 +42,7 @@ io.sockets.on('connection', function (socket) {
         network[socket.id].friends = data.friends;
         socket.join(data.id);
         var friendsConnected = notifyToFriends(socket,data);
-        socket.emit('startChatSession', {friendsConnected: friendsConnected});
+        socket.emit('startChatSession', {friendsConnected: friendsConnected, items:[]});
         //save the socket connection
         sockets[data.id] = socket;
 
