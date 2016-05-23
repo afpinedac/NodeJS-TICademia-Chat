@@ -96,8 +96,8 @@ $(document).ready(function () {
         }
 
         var _init = function () {
-            //socket = io.connect('http://chat.grupo-guiame.org:9500');
-            socket = io.connect('http://localhost:9000');
+            //socket = io.connect('https://ticademia.guiame.org:9500', {secure:true});
+            socket = io.connect('http://localhost:9500');
             username = userConnection.name;
             $("#username").text(username);
             addFriendsToChat(userConnection.friends);
